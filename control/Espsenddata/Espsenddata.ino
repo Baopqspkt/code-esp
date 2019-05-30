@@ -10,11 +10,10 @@
 
 #include <ESP8266WiFi.h>
 
-const char* host = "baopqute.heliohost.org";
+const char* host = "www.baopqspkt.xyz";
 String ssid;
 String pass;
 
-String content1 = "0000";
 char ssid1[10];
 char pass1[20];
 
@@ -69,24 +68,32 @@ void setup() {
 void loop() 
 {
   
-  Serial.print("connecting to ");
-  Serial.print(host);
-  Serial.println();
+  //Serial.print("connecting to ");
+  //Serial.print(host);
+  //Serial.println();
+  //WiFiClient client;
   
-  // Use WiFiClient class to create TCP connections
+  while(Serial.available()==0);
+  String ledsta;
+  while (Serial.available() > 0)
+    {
+        ledsta = ledsta + String(char(Serial.read()));
+        Serial.println(ledsta.length());
+        Serial.println(ledsta); 
+        //ledsta = Serial.readString();
+  if(ledsta.length() == 4)
+  {
   WiFiClient client;
-  
   const int httpPort = 80;
-  
   if (!client.connect(host, httpPort)) 
   {
     Serial.println("connection failed");
     delay(5000);
     return;
   }
-  String url = "/getstate.php?color=" + content1;
+  String url = "/getstate.php?color=" + ledsta;
   
-  Serial.print("Requesting URL: ");
+  //Serial.print("Requesting URL: ");
   Serial.println(url);
 
   // This will send the request to the server
@@ -99,29 +106,26 @@ void loop()
     if (len > 0)
     {
       content = content + String(char(client.read())); 
+      //content = client.readStringUntil('\r');
     }
   }
-  if((content.length() < 200) && (content.length()>0))
-    content1 = content.substring(162,166);
-  //Serial.println("content:"); 
-  Serial.println(content1); 
-  Serial.println("Length:"); 
-  Serial.println(content.length()); 
-  //for (int i = 162; i < content.length(); i ++)
-  //{
-    //Serial.print(i);
-    //Serial.print(": ");
-    //Serial.print(content[i]);
-    //Serial.println("");
-  //}
-  //162, 163, 164, 165
-  Serial.println("");
+  if((content.length() < 200) && (content.length()>=0))
+    {
+      content = content.substring(162,166);
+      Serial.println(content); 
+    }
+  else
+    {
+       Serial.println(content.length());
+    }
+  //Serial.println(content);
   if(!client.connected())
   {
-    Serial.println("Disconnectig...");
-    Serial.println();
+    //Serial.println("Disconnectig...");
+    //Serial.println();
     client.stop();
     delay(5000);
   }
-  
+  }
+    }
 }
