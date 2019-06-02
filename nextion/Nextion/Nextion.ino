@@ -1,17 +1,23 @@
-// Author: Pham Quoc Bao
-// Mail: baopq.spkt@gmail.com
-// Modify 11/05/2019 by qb
-
 #include <ESP8266WiFi.h>
-
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(4, 5);
+String readString;
+int chophep = 0;
 const char *host = "www.baopqspkt.xyz";
 const char *ssid = "PT";
 const char *pass = "phamquocbao";
-String ledsta = "";
+
+void endsend()
+{
+    mySerial.write(0xff);
+    mySerial.write(0xff);
+    mySerial.write(0xff);
+}
+
 void setup()
 {
-    Serial.begin(115200);
-    /* Set ESP8266 to WiFi Station mode */
+    mySerial.begin(9600);
+    Serial.begin(9600);
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, pass);
 
@@ -26,14 +32,26 @@ void setup()
 
 void loop()
 {
-    while (Serial.available() == 0);
-    while (Serial.available())
+
+    while (mySerial.available())
     {
-        ledsta = Serial.readString();
-         Serial.println("trong while");
+        delay(3);
+        char c = (char)mySerial.read();
+        readString += c;
     }
-    
-     if (ledsta == "0x11")
+    readString.trim();
+
+    if (readString.length() > 0)
+    {
+        Serial.println("Length:");
+        Serial.println(readString.length());
+        Serial.println(readString);
+    }
+    if ((readString == "11") || (readString == "01") || (readString == "12") || (readString == "02") || (readString == "13") || (readString == "03") || (readString == "14") || (readString == "04"))
+    {
+        chophep = 1;
+    }
+    if (chophep == 1)
     {
         WiFiClient client;
         const int httpPort = 80;
@@ -43,15 +61,83 @@ void loop()
             delay(5000);
             return;
         }
-        String url = "/getdatanextionblue.php?color=0";
+        String url = "/getdatanextion.php?color=";
+        url = url + readString;
         Serial.println(url);
         client.print("GET " + url + " HTTP/1.1\r\n" + "Host: " + host + "\r\n" + "Connection: close\r\n\r\n");
+        String content = "";
+        while (client.connected())
+        {
+            int len = client.available();
+            if (len > 0)
+            {
+                content = content + String(char(client.read()));
+            }
+        }
+        if ((content.length() < 200) && (content.length() >= 0))
+        {
+            content = content.substring(162, 166);
+            Serial.println(content);
+            Serial.println(content.length());
+        }
+        else
+        {
+            Serial.println(content.length());
+        }
         client.stop();
-        Serial.println("connection failed");
-        ledsta = "";
+        if(content.substring(0,1) == "1")
+        {
+          String command = "den1.val=1";
+          mySerial.print(command);
+          endsend();
+        }
+        else if(content.substring(0,1) == "0")
+        {
+          String command = "den1.val=0";
+          mySerial.print(command);
+          endsend();
+        }
+        if(content.substring(1,2) == "1")
+        {
+          String command = "den2.val=1";
+          mySerial.print(command);
+          endsend();
+        }
+        else if(content.substring(1,2) == "0")
+        {
+          String command = "den2.val=0";
+          mySerial.print(command);
+          endsend();
+        }
+        if(content.substring(2,3) == "1")
+        {
+          String command = "den3.val=1";
+          mySerial.print(command);
+          endsend();
+        }
+        else if(content.substring(2,3) == "0")
+        {
+          String command = "den3.val=0";
+          mySerial.print(command);
+          endsend();
+        }
+        if(content.substring(3,4) == "1")
+        {
+          String command = "den4.val=1";
+          mySerial.print(command);
+          endsend();
+        }
+        else if(content.substring(3,4) == "0")
+        {
+          String command = "den4.val=0";
+          mySerial.print(command);
+          endsend();
+        }
+        chophep = 0;
+        readString = "";
     }
     else
     {
-      Serial.print(ledsta);
+        readString = "";
     }
 }
