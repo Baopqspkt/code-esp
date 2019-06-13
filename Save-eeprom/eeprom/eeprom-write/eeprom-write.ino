@@ -1,8 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <EEPROM.h>
 
-String ssid = "PT";
-String password = "phamquocbao";
+String ssid;
+String password;
 int vtssid = 0, vtpass = 0, j = 0;
 int ssidlength = 0, passlength = 0;
 char *ssid1 = (char *)malloc(sizeof(ssid));

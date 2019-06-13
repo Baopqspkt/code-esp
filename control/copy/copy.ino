@@ -49,19 +49,19 @@ void setup() {
   Serial.println(pass);
   Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
-  int str_lenssid = ssid.length() + 1;   
-  int str_lenpass = pass.length() + 1;  
-  ssid.toCharArray(ssid1,str_lenssid);
-  pass.toCharArray(pass1,str_lenpass);
-  int i = 0;
-  Serial.print("ssid:");
-  for (i =0 ;i < str_lenssid;i ++)
-    Serial.print(ssid1[i]);
-  Serial.println();
-  Serial.print("pass:");
-  for (i =0 ;i < str_lenpass;i ++)
-    Serial.print(pass1[i]);
-  Serial.println();
+//  int str_lenssid = ssid.length() + 1;   
+//  int str_lenpass = pass.length() + 1;  
+//  ssid.toCharArray(ssid1,str_lenssid);
+//  pass.toCharArray(pass1,str_lenpass);
+//  int i = 0;
+//  Serial.print("ssid:");
+//  for (i =0 ;i < str_lenssid;i ++)
+//    Serial.print(ssid1[i]);
+//  Serial.println();
+//  Serial.print("pass:");
+//  for (i =0 ;i < str_lenpass;i ++)
+//    Serial.print(pass1[i]);
+//  Serial.println();
   
  }
 
