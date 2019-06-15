@@ -116,7 +116,7 @@ void setup()
         delay(500);
         Serial.println(".");
         lan++;
-        if (lan == 10)
+        if (lan == 100)
         {
             ena_smart = 1;
             break;
